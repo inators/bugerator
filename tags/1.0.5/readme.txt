@@ -1,14 +1,14 @@
-=== Bugerator ===
+=== Plugin Name ===
 Contributors: tickerator
 Donate link: http://www.tickerator.org
-Tags: issue tracking, bug tracking, project tracking, submit bugs, issues, bug tracker
+Tags: issue tracking, bug tracking, project tracking, submit bugs, issues
 Requires at least: 3.4.1
-Tested up to: 5.2.3
-Stable tag: 1.1.7
+Tested up to: 3.4.1
+Stable tag: 1.0.5
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Simple bug-tracking software easily managed on your Wordpress. 
+Simple bug-tracking software easily managed on your Wordpress. Requires PHP 5.0.
 
 == Description ==
 
@@ -67,75 +67,6 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 
 == Changelog ==
 
-= 1.1.7 =
-
-* Couple minor bug fixes
-
-= 1.1.6 =
-
-* Added limits to the size of the issue map
-* Now can send an email to the developer when it has been assigned
-* Minor bug fixes
-
-= 1.1.5 =
-
-* Added network install/uninstall for wordpress multisite networks
-
-= 1.1.4 =
-
-* Fixed spelling & small bugs
-* Added ability to reverse option corruption
-
-= 1.1.3 =
-
-* Fixed css disappearing bug
-* Fixed first project sort bug
-
-= 1.1.2 =
-
-* Gee permalinks are rough.  Should work in all cases now.
-
-= 1.1.1 =
-
-* Fixed freak permalink bug
-
-= 1.1.0 =
-
-* Anonymous comments now controlled by setting
-* New description field for projects
-* Description tooltips on descriptions & projects
-* Added custom status entries
-* Now can see changes since last log in
-* Renamed global variables to avoid collissions with other plugins
-* Various code upgrades needed for Wordpress 3.6
-
-
-= 1.0.8 =
-
-* Updated for the newly enforced wpdb->prepare in WP 3.5
-* Added customizable project sort and hiding
-
-= 1.0.7 =
-
-* CSS no longer overwritten by new versions
-* Type now shown in list issues
-* Fixed anonymous users can edit bugs
-* Release date display fixed
-
-= 1.0.6.1 =
-
-* Fixed a little bug that killed the attachments.
-
-= 1.0.6 = 
-
-* Can now manage projects inside the dashboard
-* Fixed issues related to ajax and FORCE_SSL_ADMIN
-* Added ajaxurl definition to all pages since it isn't defined for non admins
-* Fixed file upload
-* Fixed export / import
-* Fixed issues related to bugerator admins/devs that aren't admins for WP
-* Various other fixes
-
 = 1.0.5 = 
 
 * I wish I could take back a release. Managed to leave a bit of debug code in the file upload so the upload was broken in 1.0.4
@@ -170,56 +101,6 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 * Has all of the features I could think of and fixed all the bugs that I could find
 
 == Upgrade Notice ==
-
-= 1.1.7 =
-
-Backup bugerator.css file before updating if you customized it.  Couple bug fixes.
-
-= 1.1.6 =
-
-Backup bugerator.css file before updating if you customized it.  Couple display bug fixes.  Added option to email developer when you assign an issue.
-
-= 1.1.5 =
-
-Backup bugerator.css file before updating if you customized it.  Added network install/uninstall for wordpress multisite networks
-
-= 1.1.4 =
-
-Backup bugerator.css file before updating if you customized it.  Couple more new install bugs that needed to be fixed.
-
-= 1.1.3 =
-
-Couple large bugs that especially affected new installs.  WARNING - this will override bugerator.css so back it up if you made changes.  If you can't see your brand new project from the last version do this in order: 1) UPGRADE, 2) UNINSTALL, 3) REINSTALL.  Then it will solve the problems. Sorry the old project will be gone (which you couldn't see) but new projects will work.
-
-= 1.1.2 =
-
-Fixed permalink bug. You need to update.
-
-= 1.1.1 =
-
-Updated for Wordpress 3.6.  Bunch of new features.  Fixed a bunch of bugs.
-
-= 1.1.0 =
-
-Updated for Wordpress 3.6.  Bunch of new features.
-
-= 1.0.8 = 
-
-Updated for Wordpress 3.5 so you should probably update.  Also has a project sort in the admin screen.
-
-= 1.0.7 =
-
-There was a rather big bug that allowed anonymous users to edit projects so everybody should upgrade for this 
-if nothing else.  Also css is no longer overwritten so if you've customized it then your changes will still be there. 
-To make sure css updates check the "reset to default css" option in the admin menu.
-
-= 1.0.6.1 =
-
-From 1.0.6 - found a quick typo bug that killed the file upload so this fixes it.
-
-= 1.0.6 =
-
-I would upgrade if I were you. lol. Various bug fixes related to users who aren't admins. Enough fixes that everybody should update.
 
 = 1.0.5 =
 

@@ -1,14 +1,14 @@
 === Bugerator ===
 Contributors: tickerator
 Donate link: http://www.tickerator.org
-Tags: issue tracking, bug tracking, project tracking, submit bugs, issues, bug tracker
+Tags: issue tracking, bug tracking, project tracking, submit bugs, issues
 Requires at least: 3.4.1
-Tested up to: 5.2.3
-Stable tag: 1.1.7
+Tested up to: 3.4.2
+Stable tag: 1.0.7
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Simple bug-tracking software easily managed on your Wordpress. 
+Simple bug-tracking software easily managed on your Wordpress. Requires PHP 5.0.
 
 == Description ==
 
@@ -67,54 +67,6 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 
 == Changelog ==
 
-= 1.1.7 =
-
-* Couple minor bug fixes
-
-= 1.1.6 =
-
-* Added limits to the size of the issue map
-* Now can send an email to the developer when it has been assigned
-* Minor bug fixes
-
-= 1.1.5 =
-
-* Added network install/uninstall for wordpress multisite networks
-
-= 1.1.4 =
-
-* Fixed spelling & small bugs
-* Added ability to reverse option corruption
-
-= 1.1.3 =
-
-* Fixed css disappearing bug
-* Fixed first project sort bug
-
-= 1.1.2 =
-
-* Gee permalinks are rough.  Should work in all cases now.
-
-= 1.1.1 =
-
-* Fixed freak permalink bug
-
-= 1.1.0 =
-
-* Anonymous comments now controlled by setting
-* New description field for projects
-* Description tooltips on descriptions & projects
-* Added custom status entries
-* Now can see changes since last log in
-* Renamed global variables to avoid collissions with other plugins
-* Various code upgrades needed for Wordpress 3.6
-
-
-= 1.0.8 =
-
-* Updated for the newly enforced wpdb->prepare in WP 3.5
-* Added customizable project sort and hiding
-
 = 1.0.7 =
 
 * CSS no longer overwritten by new versions
@@ -170,42 +122,6 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 * Has all of the features I could think of and fixed all the bugs that I could find
 
 == Upgrade Notice ==
-
-= 1.1.7 =
-
-Backup bugerator.css file before updating if you customized it.  Couple bug fixes.
-
-= 1.1.6 =
-
-Backup bugerator.css file before updating if you customized it.  Couple display bug fixes.  Added option to email developer when you assign an issue.
-
-= 1.1.5 =
-
-Backup bugerator.css file before updating if you customized it.  Added network install/uninstall for wordpress multisite networks
-
-= 1.1.4 =
-
-Backup bugerator.css file before updating if you customized it.  Couple more new install bugs that needed to be fixed.
-
-= 1.1.3 =
-
-Couple large bugs that especially affected new installs.  WARNING - this will override bugerator.css so back it up if you made changes.  If you can't see your brand new project from the last version do this in order: 1) UPGRADE, 2) UNINSTALL, 3) REINSTALL.  Then it will solve the problems. Sorry the old project will be gone (which you couldn't see) but new projects will work.
-
-= 1.1.2 =
-
-Fixed permalink bug. You need to update.
-
-= 1.1.1 =
-
-Updated for Wordpress 3.6.  Bunch of new features.  Fixed a bunch of bugs.
-
-= 1.1.0 =
-
-Updated for Wordpress 3.6.  Bunch of new features.
-
-= 1.0.8 = 
-
-Updated for Wordpress 3.5 so you should probably update.  Also has a project sort in the admin screen.
 
 = 1.0.7 =
 

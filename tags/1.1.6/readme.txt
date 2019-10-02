@@ -3,12 +3,12 @@ Contributors: tickerator
 Donate link: http://www.tickerator.org
 Tags: issue tracking, bug tracking, project tracking, submit bugs, issues, bug tracker
 Requires at least: 3.4.1
-Tested up to: 5.2.3
-Stable tag: 1.1.7
+Tested up to: 3.8.1
+Stable tag: 1.1.6
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Simple bug-tracking software easily managed on your Wordpress. 
+Simple bug-tracking software easily managed on your Wordpress. Requires PHP 5.0.
 
 == Description ==
 
@@ -66,10 +66,6 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 6. The ability to add/edit administrators without increasing their access to your blog.
 
 == Changelog ==
-
-= 1.1.7 =
-
-* Couple minor bug fixes
 
 = 1.1.6 =
 
@@ -170,10 +166,6 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 * Has all of the features I could think of and fixed all the bugs that I could find
 
 == Upgrade Notice ==
-
-= 1.1.7 =
-
-Backup bugerator.css file before updating if you customized it.  Couple bug fixes.
 
 = 1.1.6 =
 

@@ -8,7 +8,7 @@ Stable tag: 1.1.7
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Simple bug-tracking software easily managed on your Wordpress. 
+Simple bug-tracking software easily managed on your Wordpress. Requires PHP 5.0.
 
 == Description ==
 
