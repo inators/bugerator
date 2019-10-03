@@ -818,7 +818,7 @@ class BugeratorAjax {
     }
 
     /**
-     * Returns some posible css values for a aoption
+     * Returns some posible css values for an option
      * 
      * If a css key such as background-color is given this returns a summary of options
      * or what to add to the value field.
@@ -1686,7 +1686,7 @@ class BugeratorMain {
      */
 
     /**
-     * This returns the navigation menu at the top of each pade
+     * This returns the navigation menu at the top of each page
      * 
      * as one would expect this returns our navigation menu
      * for tabs or the like.
@@ -1758,12 +1758,22 @@ class BugeratorMain {
             array_pop($tabs);
         }
         // no profile if not logged in.
-        if (!isset($bug_user->ID) or $bug_user->ID == 0)
-            array_pop($tabs);
+        if (!isset($bug_user->ID) or $bug_user->ID == 0) {
+            array_pop($tabs); // Update menu
+            array_pop($tabs); // profile menu
+            // take out menu if we use that option TODO: you are here
+            if (true) {
+                unset($tabs['list']);
+                unset($tabs['map']);
+                unset($tabs['display']);
+            }
+        }
         $issue = "";
         if ($issue_id > 0)
             $issue = "&issue=$issue_id";
 
+
+        
         $permalink = BugeratorMenu::my_get_page_link();
         $output = "<!-- bugerator->get_menu function -->\r\n<h1 class='bugerator' >$project_name</h1>" .
                 "<div class='nav-tab-wrapper bugerator_nav_tab_wrapper' >
@@ -5202,6 +5212,7 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
                     ",default_priority|" . $options['default_priority'] . ",default_status|" . $options['default_status'] .
                     ",email_on_assignment|" . $options['email_on_assignment'];
             update_option('bugerator_options', $option_string);
+            // TODO: you are also here
             $content = "<h2>Options updated.</h2>\r\n";
             if (isset($post->guid))
                 $content .= "<a href='$page'>Click to view visual changes.</a>";
