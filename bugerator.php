@@ -10,7 +10,7 @@
   License: GPL2
  */
 
-/*  Copyright 2012  David Whipple (email : david@tickerator.org)
+/*  Copyright 2012-2019  David Whipple (email : david@tickerator.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as
@@ -24,6 +24,13 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/**
+ * It is now Oct 2019 and I have been using the == the way that the wordpress convention says - 
+ * if (true == $somevariable) and let me say now that looking through the code I hate that convention
+ * and I'm never doing it again.  Sorry for the inconsistent use of the == in my code
+ * 
  */
 
 
@@ -444,6 +451,8 @@ class BugeratorAjax {
      * For security file attachments are not accessable directly.  This fetches the file and 
      * then returns it as part of the page. - image or text
      * 
+     * TODO: Need a way to download alternate files
+     * 
      * @global type $wpdb
      * @global string $bugerator_upload_dir - where file uploads are
      * @global string $bugerator_issue_table
@@ -848,68 +857,68 @@ class BugeratorAjax {
                 break;
             case "border":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='1px solid'>1px solid
-    <option value='1px dotted'>1px dotted
-    <option value='2px solid'>2px solid
-    <option value='2px dotted'>2px dotted
-</select>";
-                break;
-            case "color":
-                echo "Enter color code like #FF0000
-                    or color name like black";
-                break;
-            case "font-size":
-                echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='.8em'>.8em
-    <option value='1em'>1em
-    <option value='1.2em'>1.2em
-    <option value='1.4em'>1.4em
-    <option value='1.6em'>1.6em
-    <option value='1.8em'>1.8em
-    <option value='2.0em'>2.0em
-</select>";
-                break;
-            case "font-weight":
-                echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='normal'>normal
-    <option value='bold'>bold
-    <option value='bolder'>bolder
-    <option value='lighter'>lighter
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='1px solid'>1px solid
+                <option value='1px dotted'>1px dotted
+                <option value='2px solid'>2px solid
+                <option value='2px dotted'>2px dotted
+            </select>";
+                            break;
+                        case "color":
+                            echo "Enter color code like #FF0000
+                                or color name like black";
+                            break;
+                        case "font-size":
+                            echo "
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='.8em'>.8em
+                <option value='1em'>1em
+                <option value='1.2em'>1.2em
+                <option value='1.4em'>1.4em
+                <option value='1.6em'>1.6em
+                <option value='1.8em'>1.8em
+                <option value='2.0em'>2.0em
+            </select>";
+                            break;
+                        case "font-weight":
+                            echo "
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='normal'>normal
+                <option value='bold'>bold
+                <option value='bolder'>bolder
+                <option value='lighter'>lighter
+            </select>";
                 break;
             case "margin":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Left Top Right Bottom
-    <option value='5px 5px 5px 5px'>5px 5px 5px 5px
-    <option value='10px 10px 10px 10px'>10px 10px 10px 10px
-    <option value='15px 15px 15px 15px'>15px 15px 15px 15px
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Left Top Right Bottom
+                <option value='5px 5px 5px 5px'>5px 5px 5px 5px
+                <option value='10px 10px 10px 10px'>10px 10px 10px 10px
+                <option value='15px 15px 15px 15px'>15px 15px 15px 15px
+            </select>";
                 break;
             case "padding":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Left Top Right Bottom
-    <option value='5px 5px 5px 5px'>5px 5px 5px 5px
-    <option value='10px 10px 10px 10px'>10px 10px 10px 10px
-    <option value='15px 15px 15px 15px'>15px 15px 15px 15px
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Left Top Right Bottom
+                <option value='5px 5px 5px 5px'>5px 5px 5px 5px
+                <option value='10px 10px 10px 10px'>10px 10px 10px 10px
+                <option value='15px 15px 15px 15px'>15px 15px 15px 15px
+            </select>";
                 break;
             case "text-decoration":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='none'>none
-    <option value='underline'>underline
-    <option value='overline'>overline
-    <option value='line-through'>line-through
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='none'>none
+                <option value='underline'>underline
+                <option value='overline'>overline
+                <option value='line-through'>line-through
+            </select>";
                 break;
             default:
                 die();
@@ -1093,7 +1102,7 @@ class BugeratorAjax {
             die();
         }
         echo "<select id='add_$which' onChange=(add_user(\"$which\")) >
-	<option value=''> ";
+	    <option value=''> ";
         foreach ($display_names as $id => $name) {
             echo "<option value='$id' >$name\r\n";
         }
@@ -2067,6 +2076,8 @@ class BugeratorMain {
      * 
      * accept file upload and return the filename or none for the database
      * 
+     * TODO: rewrite this so we can accept other files if that is a valid option
+     * 
      * @global string $bugerator_upload_dir
      * @global string $bugerator_filesize - max filesize determined in options
      * @param type $post_field - what field contains the file information.
@@ -2098,7 +2109,7 @@ class BugeratorMain {
                     $extension != "log") {
                 return array("", "Invalid file type. File not added. Valid types are .jpg, .jpeg, .png, .gif, .txt, and .log.");
             } elseif ($_FILES[$post_field]['size'] > $bugerator_filesize) {
-                return array("", "File too large. File must be under 1MB");
+                return array("", "File too large.");
             } else {
                 // stick a 6 digit random number in front of the file name.
                 // Should ensure no duplicate files without the fuss and muss
@@ -2117,7 +2128,7 @@ class BugeratorMain {
             }
         } elseif (isset($_FILES[$post_field]) and $_FILES[$post_field]['name'] <> "" and
                 "" == $_FILES[$post_field]['type']) {// file was attempted but not sent
-            return array("", "File too large. File must be under 1MB");
+            return array("", "File too large.");
         } else {
             return 0;
         }
@@ -2441,18 +2452,18 @@ class BugeratorMain {
 
             // using an ajax call to get the text file
             $javascript = " // quickie ajax to get the attachment
-function show_file_$type" . "_$id() {
-	var data = {
-	    action: 'bugerator_get_attachment',
-	    post: '$type',
-	    id: $id,
-	    security: '$ajax_nonce'
-	};
-	
-	jQuery.get(ajaxurl, data, function(response) {
-	    document.getElementById('file_attach_$type" . "_$id').innerHTML = response;
+    function show_file_$type" . "_$id() {
+        var data = {
+            action: 'bugerator_get_attachment',
+            post: '$type',
+            id: $id,
+            security: '$ajax_nonce'
+        };
+        
+        jQuery.get(ajaxurl, data, function(response) {
+            document.getElementById('file_attach_$type" . "_$id').innerHTML = response;
 
-	});
+        });
 		    }";
         } else {
             $ajax_url = admin_url() . "admin-ajax.php";
@@ -2464,7 +2475,7 @@ function show_file_$type" . "_$id() {
 		    document.getElementById('file_attach_$type" . "_$id').innerHTML =
 		    '<img src=\"$ajax_url?action=bugerator_get_attachment" .
                     "&security=$ajax_nonce&post=$type&id=$id\" >'
- }";
+            }";
         }
         return $javascript;
     }
@@ -4504,7 +4515,7 @@ class BugeratorMenu {
         ;
 
         $output = "/* Note: feel free to edit but if you take out the #seperator tags or change the
-heading names (ie. bugerator_css_all) then the program won't be able to parse this. */\r\n";
+    heading names (ie. bugerator_css_all) then the program won't be able to parse this. */\r\n";
         foreach ($input_css as $key => $page_css) {
             $output .= "#seperator{}\r\n";
             $output .= "/* $key */\r\n";
