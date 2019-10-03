@@ -207,6 +207,7 @@ function bugerator_function($atts) {
     // Go through the options settings and assign them.
     global $bugerator_anonymous_post;
     global $bugerator_anonymous_comments;
+    global $hide_all_anonymous;
     global $bugerator_default_priority;
     global $bugerator_default_status;
     global $bugerator_upload_files;
@@ -224,6 +225,10 @@ function bugerator_function($atts) {
         $bugerator_anonymous_comments = true;
     else
         $bugerator_anonymous_comments = false;
+    if ($options['hide_all_anonymous'] == "true")
+        $hide_all_anonymous = true;
+    else
+        $hide_all_anonymous = false;
     if ($options['upload_files'] == "true")
         $bugerator_upload_files = true;
     else
@@ -302,6 +307,13 @@ function bugerator_function($atts) {
 
     // $menu is an array of links including the active link
     $menu = $main->get_menu($navigation, $choice_menu, $project, $issue_id);
+
+    // Need to hide some menus iof that is an option and we aren't logged in
+    if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $hide_all_anonymous) {
+        if ($navigation != "display")
+            $navigation = "add";
+    }
+
 
     switch ($navigation) {
         case "choose":
@@ -1706,6 +1718,7 @@ class BugeratorMain {
         global $bug_user;
         global $wpdb;
         global $bugerator_project_table;
+        global $hide_all_anonymous;
         // need to keep the project moving forward in the get menu if applicable
         // project is overridden by the shortcode anyway
         if ("ALL" == $project) {
@@ -1761,8 +1774,8 @@ class BugeratorMain {
         if (!isset($bug_user->ID) or $bug_user->ID == 0) {
             array_pop($tabs); // Update menu
             array_pop($tabs); // profile menu
-            // take out menu if we use that option TODO: you are here
-            if (true) {
+            // take out menu if we use that option
+            if ($hide_all_anonymous) {
                 unset($tabs['list']);
                 unset($tabs['map']);
                 unset($tabs['display']);
@@ -2139,6 +2152,13 @@ class BugeratorMain {
      * @return string
      */
     function display_bug($issue_id = -1, $message = "", $error = "", $no_comments = false) {
+        // You shouldn't be able to get here if hide_all_anonymous is on but in case somebody
+        // cheats the $_GET line
+        global $bug_user;
+        global $hide_all_anonymous;
+        if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $hide_all_anonymous) {
+            return "Access denied.  Sorry.";
+        }
         if (-1 == $issue_id and !isset($_GET['issue'])) {
             return $this->list_issues();
         } else {
@@ -5148,7 +5168,8 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
         if (isset($_GET['reset_css']) and "sure" == $_GET['reset_css'] and
                 false !== wp_verify_nonce($_GET['reset_nonce'], 'bugerator_options')) {
             // if we need to reset the css we'll just copy the default file over the edited one.
-            unlink("$path/bugerator.css");
+            if(is_file("$path/bugerator.css"))
+                unlink("$path/bugerator.css");
             copy("$path/bugerator-default.css", "$path/bugerator.css");
             $content = "<h2>CSS has been reset.</h2>\r\n";
         }
@@ -5189,6 +5210,10 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
                 $options['anonymous_post'] = "true";
             else
                 $options['anonymous_post'] = "false";
+            if (isset($_POST['hide_all_anonymous']))
+                $options['hide_all_anonymous'] = "true";
+            else
+                $options['hide_all_anonymous'] = "false";
             if (isset($_POST['upload_files']))
                 $options['upload_files'] = "true";
             else
@@ -5210,9 +5235,9 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
                     ",filesize|" . $options['filesize'] . ",navtabsize|" . $options['navtabsize'] .
                     ",anonymous_comments|" . $options['anonymous_comments'] .
                     ",default_priority|" . $options['default_priority'] . ",default_status|" . $options['default_status'] .
-                    ",email_on_assignment|" . $options['email_on_assignment'];
+                    ",email_on_assignment|" . $options['email_on_assignment'] . 
+                    ",hide_all_anonymous|" . $options['hide_all_anonymous'];
             update_option('bugerator_options', $option_string);
-            // TODO: you are also here
             $content = "<h2>Options updated.</h2>\r\n";
             if (isset($post->guid))
                 $content .= "<a href='$page'>Click to view visual changes.</a>";
@@ -5876,7 +5901,7 @@ class BugeratorInstall {
          */
         add_option('bugerator_options', 'anonymous_post|false,upload_files|true,date_format|m/d/Y,' .
                 'long_date_format|m/d/Y H:i:s T,margin|0,filesize|1048576,navtabsize|,anonymous_comments|false' .
-                ',default_priority|3,default_status|0', '', 'no');
+                ',default_priority|3,default_status|0,hide_all_anonymouse|false', '', 'no');
         add_option('bugerator_types', 'Bug,Feature Request,Idea', '', 'no');
 
         add_option('bugerator_project_display', '', '', 'no');
@@ -5922,6 +5947,7 @@ class BugeratorInstall {
                 $options .= ",default_priority|3,default_status|0";
                 update_option('bugerator_options', $options);
             }
+
             // decided no future options
             $futures = get_option('bugerator_statuses');
             if (false !== strpos($futures, "future1")) {
@@ -5936,7 +5962,11 @@ class BugeratorInstall {
                 $options .= ",email_on_assignment|true";
                 update_option('bugerator_options', $options);
             }
-
+            // upgrade from 1.1.7 to 1.1.8
+            if (strpos($options,"hide_all_anonymous") == false) {
+                $options .= ",hide_all_anonymous|false";
+                update_option('bugerator_options', $options);
+            }
 
             // get rid of phantom options. Not sure if this is a throwback to beta
             // or 1.0.0 but I found it in my installs
