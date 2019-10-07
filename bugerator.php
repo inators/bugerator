@@ -214,10 +214,11 @@ function bugerator_function($atts) {
     // Go through the options settings and assign them.
     global $bugerator_anonymous_post;
     global $bugerator_anonymous_comments;
-    global $hide_all_anonymous;
+    global $bugerator_hide_all_anonymous;
     global $bugerator_default_priority;
     global $bugerator_default_status;
     global $bugerator_upload_files;
+    global $bugerator_accept_all_filetypes;
     global $bugerator_date_format;
     global $bugerator_long_date_format;
     global $bugerator_filesize;
@@ -233,13 +234,18 @@ function bugerator_function($atts) {
     else
         $bugerator_anonymous_comments = false;
     if ($options['hide_all_anonymous'] == "true")
-        $hide_all_anonymous = true;
+        $bugerator_hide_all_anonymous = true;
     else
-        $hide_all_anonymous = false;
+        $bugerator_hide_all_anonymous = false;
     if ($options['upload_files'] == "true")
         $bugerator_upload_files = true;
     else
         $bugerator_upload_files = false;
+    if ($options['accept_all_filetypes'] == "true")
+        $bugerator_accept_all_filetypes = true;
+    else
+        $bugerator_accept_all_filetypes = false;
+    
     $bugerator_date_format = $options['date_format'];
     $bugerator_long_date_format = $options['long_date_format'];
     $bugerator_filesize = $options['filesize'];
@@ -316,7 +322,7 @@ function bugerator_function($atts) {
     $menu = $main->get_menu($navigation, $choice_menu, $project, $issue_id);
 
     // Need to hide some menus iof that is an option and we aren't logged in
-    if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $hide_all_anonymous) {
+    if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $bugerator_hide_all_anonymous) {
         if ($navigation != "display")
             $navigation = "add";
     }
@@ -489,12 +495,22 @@ class BugeratorAjax {
                 $output = "<textarea cols='60' rows='6' >" . htmlspecialchars($file_output) .
                         "</textarea>";
                 echo $output;
-            } else {
+            } elseif (strtolower(substr($file, -3)) == "png" or 
+                strtolower(substr($file, -3)) == "gif" or 
+                strtolower(substr($file, -3)) == "jpg" or 
+                strtolower(substr($file, -3)) == "jpeg" ) {
                 header("Content-type: image/png");
                 header('Content-Transfer-Encoding: binary');
                 header('Expires: 0');
                 header('Cache-Control: must-revalidate');
                 header('Pragma: public');
+                header('Content-Length: ' . filesize($file));
+                ob_clean();
+                flush();
+                readfile($file);
+            } else {
+                header("Content-type: application/octet-stream");
+                header("Content-Disposition: filename=\"".$file."\"");
                 header('Content-Length: ' . filesize($file));
                 ob_clean();
                 flush();
@@ -1727,7 +1743,7 @@ class BugeratorMain {
         global $bug_user;
         global $wpdb;
         global $bugerator_project_table;
-        global $hide_all_anonymous;
+        global $bugerator_hide_all_anonymous;
         // need to keep the project moving forward in the get menu if applicable
         // project is overridden by the shortcode anyway
         if ("ALL" == $project) {
@@ -1784,7 +1800,7 @@ class BugeratorMain {
             array_pop($tabs); // Update menu
             array_pop($tabs); // profile menu
             // take out menu if we use that option
-            if ($hide_all_anonymous) {
+            if ($bugerator_hide_all_anonymous) {
                 unset($tabs['list']);
                 unset($tabs['map']);
                 unset($tabs['display']);
@@ -2086,12 +2102,13 @@ class BugeratorMain {
     function process_file($post_field) {
         global $bugerator_upload_dir;
         global $bugerator_filesize;
+        global $bugerator_accept_all_filetypes;
 
         // process file if any.
         if (isset($_FILES[$post_field]) and
                 0 == $_FILES[$post_field]['error']) { // successful file load
             // hurray we have a file.
-            // Make sure it is text or picture
+            // Make sure it is text or picture ** unless we accept all file types
             $mime = strtolower($_FILES[$post_field]['type']);
             $_FILES[$post_field]['name'] = str_replace(" ", "_", $_FILES[$post_field]['name']);
             $path_parts = pathinfo($_FILES[$post_field]['name']);
@@ -2099,14 +2116,16 @@ class BugeratorMain {
             if ($mime != "text/plain" and
                     $mime != "image/png" and
                     $mime != "image/gif" and
-                    $mime != "image/jpeg") {
+                    $mime != "image/jpeg" and
+                    $bugerator_accept_all_filetypes == false) {
                 return array("", "Invalid file type. File not added. Images and text only.");
             } elseif ($extension != "jpg" and
                     $extension != "jpeg" and
                     $extension != "gif" and
                     $extension != "png" and
                     $extension != "txt" and
-                    $extension != "log") {
+                    $extension != "log" and
+                    $bugerator_accept_all_filetypes == false) {
                 return array("", "Invalid file type. File not added. Valid types are .jpg, .jpeg, .png, .gif, .txt, and .log.");
             } elseif ($_FILES[$post_field]['size'] > $bugerator_filesize) {
                 return array("", "File too large.");
@@ -2166,8 +2185,8 @@ class BugeratorMain {
         // You shouldn't be able to get here if hide_all_anonymous is on but in case somebody
         // cheats the $_GET line
         global $bug_user;
-        global $hide_all_anonymous;
-        if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $hide_all_anonymous) {
+        global $bugerator_hide_all_anonymous;
+        if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $bugerator_hide_all_anonymous) {
             return "Access denied.  Sorry.";
         }
         if (-1 == $issue_id and !isset($_GET['issue'])) {
@@ -2312,7 +2331,7 @@ class BugeratorMain {
         }
         $submitter = new wp_user($result->submitter);
 
-
+        // TODO: figure out how to download a file
         if ($result->filename <> "0") {
             $file_text = "<span id='file_attach_issue_$issue_id'></span>";
             $file_attached = "<a onclick = 'show_file_issue_$issue_id();'>" .
@@ -2451,6 +2470,7 @@ class BugeratorMain {
                 "log" == strtolower(substr($filename, -3))) {
 
             // using an ajax call to get the text file
+            // TODO write the javascript to download a file
             $javascript = " // quickie ajax to get the attachment
     function show_file_$type" . "_$id() {
         var data = {
@@ -5225,6 +5245,10 @@ class BugeratorMenu {
                 $options['hide_all_anonymous'] = "true";
             else
                 $options['hide_all_anonymous'] = "false";
+            if (isset($_POST['accept_all_filetypes']))
+                $options['accept_all_filetypes'] = "true";
+            else
+                $options['accept_all_filetypes'] = "false";                
             if (isset($_POST['upload_files']))
                 $options['upload_files'] = "true";
             else
@@ -5247,7 +5271,8 @@ class BugeratorMenu {
                     ",anonymous_comments|" . $options['anonymous_comments'] .
                     ",default_priority|" . $options['default_priority'] . ",default_status|" . $options['default_status'] .
                     ",email_on_assignment|" . $options['email_on_assignment'] . 
-                    ",hide_all_anonymous|" . $options['hide_all_anonymous'];
+                    ",hide_all_anonymous|" . $options['hide_all_anonymous'] . 
+                    ",accept_all_filetypes|" . $options['accept_all_filetypes'];
             update_option('bugerator_options', $option_string);
             $content = "<h2>Options updated.</h2>\r\n";
             if (isset($post->guid))
@@ -5976,6 +6001,7 @@ class BugeratorInstall {
             // upgrade from 1.1.7 to 1.1.8
             if (strpos($options,"hide_all_anonymous") == false) {
                 $options .= ",hide_all_anonymous|false";
+                $options .= ",accept_all_filetypes|false";
                 update_option('bugerator_options', $options);
             }
 
