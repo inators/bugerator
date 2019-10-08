@@ -457,7 +457,6 @@ class BugeratorAjax {
      * For security file attachments are not accessable directly.  This fetches the file and 
      * then returns it as part of the page. - image or text
      * 
-     * TODO: Need a way to download alternate files
      * 
      * @global type $wpdb
      * @global string $bugerator_upload_dir - where file uploads are
@@ -2094,7 +2093,6 @@ class BugeratorMain {
      * 
      * accept file upload and return the filename or none for the database
      * 
-     * TODO: rewrite this so we can accept other files if that is a valid option
      * 
      * @global string $bugerator_upload_dir
      * @global string $bugerator_filesize - max filesize determined in options
@@ -2333,7 +2331,7 @@ class BugeratorMain {
         }
         $submitter = new wp_user($result->submitter);
 
-        // TODO: figure out how to download a file
+        
         if ($result->filename <> "0") {
             $file_text = "<span id='file_attach_issue_$issue_id'></span>";
             $file_attached = "<a onclick = 'show_file_issue_$issue_id();'>" .
