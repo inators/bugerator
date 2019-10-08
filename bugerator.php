@@ -4,7 +4,7 @@
   Plugin Name: Bugerator
   Plugin URI: http://www.tickerator.org/bugerator
   Description: A bug tracking / issue tracking plugin
-  Version: 1.1.7
+  Version: 1.1.8
   Author: David Whipple
   Author URI: http://www.tickerator.org
   License: GPL2
