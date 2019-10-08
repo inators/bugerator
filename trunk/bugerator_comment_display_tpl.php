@@ -9,10 +9,10 @@
     <h4 class="comment_display">Note ID# <?PHP echo $comment->id ?>:</h4>
     <?PHP
     if ($im_an_admin === true):
-        echo "<a href='$permalink&bugerator_nav=comment&bug_project=$bugerator_project_id&issue=$issue_id&comment_delete=$comment->id' style='text-align: center;' >Delete</a>";
+        echo "<a href='$permalink&bugerator_nav=comment&bug_project=$bugerator_project_id&issue=$issue_id&comment_delete=$comment->id' style='text-align: center;' >Delete comment</a>";
         echo "<div class='admin_edit' style='float:right;' >\r\n" .
-	"<a href='$permalink&bugerator_nav=comment&bug_project=$bugerator_project_id&issue=$issue_id&comment_edit=$comment->id' >Edit</a>" .
-	"</div>";
+	"<a href='$permalink&bugerator_nav=comment&bug_project=$bugerator_project_id&issue=$issue_id&comment_edit=$comment->id' >\r\n" .
+	"Edit Comment</a></div>";
         endif;
     ?>
     <table class="bugerator" >

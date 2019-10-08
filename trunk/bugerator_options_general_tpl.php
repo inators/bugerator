@@ -26,6 +26,15 @@
         </tr>
         <tr class="bugerator bugerator_options_general" >
             <td class="bugerator bugerator_options_general form_left" >
+                Hide all project info from anonymous users?
+            </td>
+            <td class="bugerator bugerator_options_gerneral form_right" >
+                <input type="checkbox" name="hide_all_anonymous" 
+                       <?PHP if ($options['hide_all_anonymous'] == "true") echo "CHECKED" ?>  /> Yes if checked.
+            </td>
+        </tr>
+        <tr class="bugerator bugerator_options_general" >
+            <td class="bugerator bugerator_options_general form_left" >
                 Allow uploading files?
             </td>
             <td class="bugerator bugerator_options_gerneral form_right" >
@@ -33,6 +42,15 @@
                        <?PHP if ($options['upload_files'] == "true") echo "CHECKED" ?> /> Yes if checked.
             </td>
         </tr>        
+        <tr class="bugerator bugerator_options_general" >
+            <td class="bugerator bugerator_options_general form_left" >
+                Upload any file type?
+            </td>
+            <td class="bugerator bugerator_options_gerneral form_right" >
+                <input type="checkbox" name="accept_all_filetypes" 
+                       <?PHP if ($options['accept_all_filetypes'] == "true") echo "CHECKED" ?>  /> Yes if checked.
+            </td>
+        </tr>
         <tr class="bugerator bugerator_options_general" >
             <td class="bugerator bugerator_options_general form_left" >
                 Send email when an issue has been assigned?

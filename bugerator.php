@@ -39,7 +39,7 @@
  */
 // version info
 global $bugerator_version;
-$bugerator_version = "1.1.7";
+$bugerator_version = "1.1.8";
 
 
 // Define our table globally so I won't have redundant code

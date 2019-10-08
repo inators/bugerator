@@ -10,7 +10,7 @@
   License: GPL2
  */
 
-/*  Copyright 2012  David Whipple (email : david@tickerator.org)
+/*  Copyright 2012-2019  David Whipple (email : david@tickerator.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as
@@ -26,13 +26,20 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/**
+ * It is now Oct 2019 and I have been using the == the way that the wordpress convention says - 
+ * if (true == $somevariable) and let me say now that looking through the code I hate that convention
+ * and I'm never doing it again.  Sorry for the inconsistent use of the == in my code
+ * 
+ */
+
 
 /* * ************************************************************
  * Globals and other fun set up stuff to be run every time
  */
 // version info
 global $bugerator_version;
-$bugerator_version = "1.1.7";
+$bugerator_version = "1.1.8";
 
 
 // Define our table globally so I won't have redundant code
@@ -207,9 +214,11 @@ function bugerator_function($atts) {
     // Go through the options settings and assign them.
     global $bugerator_anonymous_post;
     global $bugerator_anonymous_comments;
+    global $bugerator_hide_all_anonymous;
     global $bugerator_default_priority;
     global $bugerator_default_status;
     global $bugerator_upload_files;
+    global $bugerator_accept_all_filetypes;
     global $bugerator_date_format;
     global $bugerator_long_date_format;
     global $bugerator_filesize;
@@ -224,10 +233,19 @@ function bugerator_function($atts) {
         $bugerator_anonymous_comments = true;
     else
         $bugerator_anonymous_comments = false;
+    if ($options['hide_all_anonymous'] == "true")
+        $bugerator_hide_all_anonymous = true;
+    else
+        $bugerator_hide_all_anonymous = false;
     if ($options['upload_files'] == "true")
         $bugerator_upload_files = true;
     else
         $bugerator_upload_files = false;
+    if ($options['accept_all_filetypes'] == "true")
+        $bugerator_accept_all_filetypes = true;
+    else
+        $bugerator_accept_all_filetypes = false;
+    
     $bugerator_date_format = $options['date_format'];
     $bugerator_long_date_format = $options['long_date_format'];
     $bugerator_filesize = $options['filesize'];
@@ -302,6 +320,13 @@ function bugerator_function($atts) {
 
     // $menu is an array of links including the active link
     $menu = $main->get_menu($navigation, $choice_menu, $project, $issue_id);
+
+    // Need to hide some menus iof that is an option and we aren't logged in
+    if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $bugerator_hide_all_anonymous) {
+        if ($navigation != "display")
+            $navigation = "add";
+    }
+
 
     switch ($navigation) {
         case "choose":
@@ -432,6 +457,7 @@ class BugeratorAjax {
      * For security file attachments are not accessable directly.  This fetches the file and 
      * then returns it as part of the page. - image or text
      * 
+     * 
      * @global type $wpdb
      * @global string $bugerator_upload_dir - where file uploads are
      * @global string $bugerator_issue_table
@@ -457,7 +483,9 @@ class BugeratorAjax {
             die();
         }
         $sql .= "WHERE id = '$request_id'";
-        $file = $bugerator_upload_dir . "/" . $wpdb->get_var($sql);
+        $filename = $wpdb->get_var($sql);
+        $file = $bugerator_upload_dir . "/" . $filename;
+        $filename = substr($filename,6);
 
         if (file_exists($file)) {
             if ("txt" == strtolower(substr($file, -3)) or
@@ -468,12 +496,22 @@ class BugeratorAjax {
                 $output = "<textarea cols='60' rows='6' >" . htmlspecialchars($file_output) .
                         "</textarea>";
                 echo $output;
-            } else {
+            } elseif (strtolower(substr($file, -3)) == "png" or 
+                strtolower(substr($file, -3)) == "gif" or 
+                strtolower(substr($file, -3)) == "jpg" or 
+                strtolower(substr($file, -3)) == "jpeg" ) {
                 header("Content-type: image/png");
                 header('Content-Transfer-Encoding: binary');
                 header('Expires: 0');
                 header('Cache-Control: must-revalidate');
                 header('Pragma: public');
+                header('Content-Length: ' . filesize($file));
+                ob_clean();
+                flush();
+                readfile($file);
+            } else {
+                header("Content-type: application/octet-stream");
+                header("Content-Disposition: filename=\"".$filename."\"");
                 header('Content-Length: ' . filesize($file));
                 ob_clean();
                 flush();
@@ -818,7 +856,7 @@ class BugeratorAjax {
     }
 
     /**
-     * Returns some posible css values for a aoption
+     * Returns some posible css values for an option
      * 
      * If a css key such as background-color is given this returns a summary of options
      * or what to add to the value field.
@@ -836,68 +874,68 @@ class BugeratorAjax {
                 break;
             case "border":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='1px solid'>1px solid
-    <option value='1px dotted'>1px dotted
-    <option value='2px solid'>2px solid
-    <option value='2px dotted'>2px dotted
-</select>";
-                break;
-            case "color":
-                echo "Enter color code like #FF0000
-                    or color name like black";
-                break;
-            case "font-size":
-                echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='.8em'>.8em
-    <option value='1em'>1em
-    <option value='1.2em'>1.2em
-    <option value='1.4em'>1.4em
-    <option value='1.6em'>1.6em
-    <option value='1.8em'>1.8em
-    <option value='2.0em'>2.0em
-</select>";
-                break;
-            case "font-weight":
-                echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='normal'>normal
-    <option value='bold'>bold
-    <option value='bolder'>bolder
-    <option value='lighter'>lighter
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='1px solid'>1px solid
+                <option value='1px dotted'>1px dotted
+                <option value='2px solid'>2px solid
+                <option value='2px dotted'>2px dotted
+            </select>";
+                            break;
+                        case "color":
+                            echo "Enter color code like #FF0000
+                                or color name like black";
+                            break;
+                        case "font-size":
+                            echo "
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='.8em'>.8em
+                <option value='1em'>1em
+                <option value='1.2em'>1.2em
+                <option value='1.4em'>1.4em
+                <option value='1.6em'>1.6em
+                <option value='1.8em'>1.8em
+                <option value='2.0em'>2.0em
+            </select>";
+                            break;
+                        case "font-weight":
+                            echo "
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='normal'>normal
+                <option value='bold'>bold
+                <option value='bolder'>bolder
+                <option value='lighter'>lighter
+            </select>";
                 break;
             case "margin":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Left Top Right Bottom
-    <option value='5px 5px 5px 5px'>5px 5px 5px 5px
-    <option value='10px 10px 10px 10px'>10px 10px 10px 10px
-    <option value='15px 15px 15px 15px'>15px 15px 15px 15px
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Left Top Right Bottom
+                <option value='5px 5px 5px 5px'>5px 5px 5px 5px
+                <option value='10px 10px 10px 10px'>10px 10px 10px 10px
+                <option value='15px 15px 15px 15px'>15px 15px 15px 15px
+            </select>";
                 break;
             case "padding":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Left Top Right Bottom
-    <option value='5px 5px 5px 5px'>5px 5px 5px 5px
-    <option value='10px 10px 10px 10px'>10px 10px 10px 10px
-    <option value='15px 15px 15px 15px'>15px 15px 15px 15px
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Left Top Right Bottom
+                <option value='5px 5px 5px 5px'>5px 5px 5px 5px
+                <option value='10px 10px 10px 10px'>10px 10px 10px 10px
+                <option value='15px 15px 15px 15px'>15px 15px 15px 15px
+            </select>";
                 break;
             case "text-decoration":
                 echo "
-<select id='css_value_$key' onChange=(easy_value_css('$key')) >
-    <option value =' '>Choose:
-    <option value='none'>none
-    <option value='underline'>underline
-    <option value='overline'>overline
-    <option value='line-through'>line-through
-</select>";
+            <select id='css_value_$key' onChange=(easy_value_css('$key')) >
+                <option value =' '>Choose:
+                <option value='none'>none
+                <option value='underline'>underline
+                <option value='overline'>overline
+                <option value='line-through'>line-through
+            </select>";
                 break;
             default:
                 die();
@@ -1081,7 +1119,7 @@ class BugeratorAjax {
             die();
         }
         echo "<select id='add_$which' onChange=(add_user(\"$which\")) >
-	<option value=''> ";
+	    <option value=''> ";
         foreach ($display_names as $id => $name) {
             echo "<option value='$id' >$name\r\n";
         }
@@ -1686,7 +1724,7 @@ class BugeratorMain {
      */
 
     /**
-     * This returns the navigation menu at the top of each pade
+     * This returns the navigation menu at the top of each page
      * 
      * as one would expect this returns our navigation menu
      * for tabs or the like.
@@ -1706,6 +1744,7 @@ class BugeratorMain {
         global $bug_user;
         global $wpdb;
         global $bugerator_project_table;
+        global $bugerator_hide_all_anonymous;
         // need to keep the project moving forward in the get menu if applicable
         // project is overridden by the shortcode anyway
         if ("ALL" == $project) {
@@ -1758,12 +1797,22 @@ class BugeratorMain {
             array_pop($tabs);
         }
         // no profile if not logged in.
-        if (!isset($bug_user->ID) or $bug_user->ID == 0)
-            array_pop($tabs);
+        if (!isset($bug_user->ID) or $bug_user->ID == 0) {
+            array_pop($tabs); // Update menu
+            array_pop($tabs); // profile menu
+            // take out menu if we use that option
+            if ($bugerator_hide_all_anonymous) {
+                unset($tabs['list']);
+                unset($tabs['map']);
+                unset($tabs['display']);
+            }
+        }
         $issue = "";
         if ($issue_id > 0)
             $issue = "&issue=$issue_id";
 
+
+        
         $permalink = BugeratorMenu::my_get_page_link();
         $output = "<!-- bugerator->get_menu function -->\r\n<h1 class='bugerator' >$project_name</h1>" .
                 "<div class='nav-tab-wrapper bugerator_nav_tab_wrapper' >
@@ -2044,6 +2093,7 @@ class BugeratorMain {
      * 
      * accept file upload and return the filename or none for the database
      * 
+     * 
      * @global string $bugerator_upload_dir
      * @global string $bugerator_filesize - max filesize determined in options
      * @param type $post_field - what field contains the file information.
@@ -2052,12 +2102,13 @@ class BugeratorMain {
     function process_file($post_field) {
         global $bugerator_upload_dir;
         global $bugerator_filesize;
+        global $bugerator_accept_all_filetypes;
 
         // process file if any.
         if (isset($_FILES[$post_field]) and
                 0 == $_FILES[$post_field]['error']) { // successful file load
             // hurray we have a file.
-            // Make sure it is text or picture
+            // Make sure it is text or picture ** unless we accept all file types
             $mime = strtolower($_FILES[$post_field]['type']);
             $_FILES[$post_field]['name'] = str_replace(" ", "_", $_FILES[$post_field]['name']);
             $path_parts = pathinfo($_FILES[$post_field]['name']);
@@ -2065,17 +2116,19 @@ class BugeratorMain {
             if ($mime != "text/plain" and
                     $mime != "image/png" and
                     $mime != "image/gif" and
-                    $mime != "image/jpeg") {
+                    $mime != "image/jpeg" and
+                    $bugerator_accept_all_filetypes == false) {
                 return array("", "Invalid file type. File not added. Images and text only.");
             } elseif ($extension != "jpg" and
                     $extension != "jpeg" and
                     $extension != "gif" and
                     $extension != "png" and
                     $extension != "txt" and
-                    $extension != "log") {
+                    $extension != "log" and
+                    $bugerator_accept_all_filetypes == false) {
                 return array("", "Invalid file type. File not added. Valid types are .jpg, .jpeg, .png, .gif, .txt, and .log.");
             } elseif ($_FILES[$post_field]['size'] > $bugerator_filesize) {
-                return array("", "File too large. File must be under 1MB");
+                return array("", "File too large.");
             } else {
                 // stick a 6 digit random number in front of the file name.
                 // Should ensure no duplicate files without the fuss and muss
@@ -2094,7 +2147,7 @@ class BugeratorMain {
             }
         } elseif (isset($_FILES[$post_field]) and $_FILES[$post_field]['name'] <> "" and
                 "" == $_FILES[$post_field]['type']) {// file was attempted but not sent
-            return array("", "File too large. File must be under 1MB");
+            return array("", "File too large.");
         } else {
             return 0;
         }
@@ -2129,6 +2182,13 @@ class BugeratorMain {
      * @return string
      */
     function display_bug($issue_id = -1, $message = "", $error = "", $no_comments = false) {
+        // You shouldn't be able to get here if hide_all_anonymous is on but in case somebody
+        // cheats the $_GET line
+        global $bug_user;
+        global $bugerator_hide_all_anonymous;
+        if ((!isset($bug_user->ID) or $bug_user->ID == 0) and $bugerator_hide_all_anonymous) {
+            return "Access denied.  Sorry.";
+        }
         if (-1 == $issue_id and !isset($_GET['issue'])) {
             return $this->list_issues();
         } else {
@@ -2271,7 +2331,7 @@ class BugeratorMain {
         }
         $submitter = new wp_user($result->submitter);
 
-
+        
         if ($result->filename <> "0") {
             $file_text = "<span id='file_attach_issue_$issue_id'></span>";
             $file_attached = "<a onclick = 'show_file_issue_$issue_id();'>" .
@@ -2405,26 +2465,32 @@ class BugeratorMain {
         global $bugerator_upload_dir;
         $ajax_nonce = wp_create_nonce('bugerator_get_attachment');
         $dir = wp_upload_dir();
+        $extension = strtolower(substr($filename, -3));
 
-        if ("txt" == strtolower(substr($filename, -3)) or
-                "log" == strtolower(substr($filename, -3))) {
+        if ($extension == "txt" or
+            $extension == "log") {
 
             // using an ajax call to get the text file
+            
             $javascript = " // quickie ajax to get the attachment
-function show_file_$type" . "_$id() {
-	var data = {
-	    action: 'bugerator_get_attachment',
-	    post: '$type',
-	    id: $id,
-	    security: '$ajax_nonce'
-	};
-	
-	jQuery.get(ajaxurl, data, function(response) {
-	    document.getElementById('file_attach_$type" . "_$id').innerHTML = response;
+        function show_file_$type" . "_$id() {
+            var data = {
+                action: 'bugerator_get_attachment',
+                post: '$type',
+                id: $id,
+                security: '$ajax_nonce'
+            };
+            
+            jQuery.get(ajaxurl, data, function(response) {
+                document.getElementById('file_attach_$type" . "_$id').innerHTML = response;
 
-	});
-		    }";
-        } else {
+            });
+            }";
+
+        } elseif ($extension == "jpg" or
+            $extension == "jpeg" or
+            $extension == "gif" or
+            $extension == "png")  {
             $ajax_url = admin_url() . "admin-ajax.php";
             if (true == FORCE_SSL_ADMIN)
                 $ajax_url = str_replace("http:", "https:", $ajax_url);
@@ -2434,7 +2500,12 @@ function show_file_$type" . "_$id() {
 		    document.getElementById('file_attach_$type" . "_$id').innerHTML =
 		    '<img src=\"$ajax_url?action=bugerator_get_attachment" .
                     "&security=$ajax_nonce&post=$type&id=$id\" >'
- }";
+            }";
+        } else {
+            $ajax_url = admin_url() . "admin-ajax.php";
+            $javascript = "function show_file_$type" . "_$id() {
+                window.open('$ajax_url?action=bugerator_get_attachment&security=$ajax_nonce&post=$type&id=$id');
+            }";
         }
         return $javascript;
     }
@@ -4474,7 +4545,7 @@ class BugeratorMenu {
         ;
 
         $output = "/* Note: feel free to edit but if you take out the #seperator tags or change the
-heading names (ie. bugerator_css_all) then the program won't be able to parse this. */\r\n";
+    heading names (ie. bugerator_css_all) then the program won't be able to parse this. */\r\n";
         foreach ($input_css as $key => $page_css) {
             $output .= "#seperator{}\r\n";
             $output .= "/* $key */\r\n";
@@ -5138,7 +5209,8 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
         if (isset($_GET['reset_css']) and "sure" == $_GET['reset_css'] and
                 false !== wp_verify_nonce($_GET['reset_nonce'], 'bugerator_options')) {
             // if we need to reset the css we'll just copy the default file over the edited one.
-            unlink("$path/bugerator.css");
+            if(is_file("$path/bugerator.css"))
+                unlink("$path/bugerator.css");
             copy("$path/bugerator-default.css", "$path/bugerator.css");
             $content = "<h2>CSS has been reset.</h2>\r\n";
         }
@@ -5179,6 +5251,14 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
                 $options['anonymous_post'] = "true";
             else
                 $options['anonymous_post'] = "false";
+            if (isset($_POST['hide_all_anonymous']))
+                $options['hide_all_anonymous'] = "true";
+            else
+                $options['hide_all_anonymous'] = "false";
+            if (isset($_POST['accept_all_filetypes']))
+                $options['accept_all_filetypes'] = "true";
+            else
+                $options['accept_all_filetypes'] = "false";                
             if (isset($_POST['upload_files']))
                 $options['upload_files'] = "true";
             else
@@ -5200,7 +5280,9 @@ heading names (ie. bugerator_css_all) then the program won't be able to parse th
                     ",filesize|" . $options['filesize'] . ",navtabsize|" . $options['navtabsize'] .
                     ",anonymous_comments|" . $options['anonymous_comments'] .
                     ",default_priority|" . $options['default_priority'] . ",default_status|" . $options['default_status'] .
-                    ",email_on_assignment|" . $options['email_on_assignment'];
+                    ",email_on_assignment|" . $options['email_on_assignment'] . 
+                    ",hide_all_anonymous|" . $options['hide_all_anonymous'] . 
+                    ",accept_all_filetypes|" . $options['accept_all_filetypes'];
             update_option('bugerator_options', $option_string);
             $content = "<h2>Options updated.</h2>\r\n";
             if (isset($post->guid))
@@ -5865,7 +5947,7 @@ class BugeratorInstall {
          */
         add_option('bugerator_options', 'anonymous_post|false,upload_files|true,date_format|m/d/Y,' .
                 'long_date_format|m/d/Y H:i:s T,margin|0,filesize|1048576,navtabsize|,anonymous_comments|false' .
-                ',default_priority|3,default_status|0', '', 'no');
+                ',default_priority|3,default_status|0,hide_all_anonymouse|false', '', 'no');
         add_option('bugerator_types', 'Bug,Feature Request,Idea', '', 'no');
 
         add_option('bugerator_project_display', '', '', 'no');
@@ -5911,6 +5993,7 @@ class BugeratorInstall {
                 $options .= ",default_priority|3,default_status|0";
                 update_option('bugerator_options', $options);
             }
+
             // decided no future options
             $futures = get_option('bugerator_statuses');
             if (false !== strpos($futures, "future1")) {
@@ -5925,7 +6008,12 @@ class BugeratorInstall {
                 $options .= ",email_on_assignment|true";
                 update_option('bugerator_options', $options);
             }
-
+            // upgrade from 1.1.7 to 1.1.8
+            if (strpos($options,"hide_all_anonymous") == false) {
+                $options .= ",hide_all_anonymous|false";
+                $options .= ",accept_all_filetypes|false";
+                update_option('bugerator_options', $options);
+            }
 
             // get rid of phantom options. Not sure if this is a throwback to beta
             // or 1.0.0 but I found it in my installs
