@@ -484,7 +484,9 @@ class BugeratorAjax {
             die();
         }
         $sql .= "WHERE id = '$request_id'";
-        $file = $bugerator_upload_dir . "/" . $wpdb->get_var($sql);
+        $filename = $wpdb->get_var($sql);
+        $file = $bugerator_upload_dir . "/" . $filename;
+        $filename = substr($filename,6);
 
         if (file_exists($file)) {
             if ("txt" == strtolower(substr($file, -3)) or
@@ -510,7 +512,7 @@ class BugeratorAjax {
                 readfile($file);
             } else {
                 header("Content-type: application/octet-stream");
-                header("Content-Disposition: filename=\"".$file."\"");
+                header("Content-Disposition: filename=\"".$filename."\"");
                 header('Content-Length: ' . filesize($file));
                 ob_clean();
                 flush();
@@ -2465,27 +2467,32 @@ class BugeratorMain {
         global $bugerator_upload_dir;
         $ajax_nonce = wp_create_nonce('bugerator_get_attachment');
         $dir = wp_upload_dir();
+        $extension = strtolower(substr($filename, -3));
 
-        if ("txt" == strtolower(substr($filename, -3)) or
-                "log" == strtolower(substr($filename, -3))) {
+        if ($extension == "txt" or
+            $extension == "log") {
 
             // using an ajax call to get the text file
-            // TODO write the javascript to download a file
+            
             $javascript = " // quickie ajax to get the attachment
-    function show_file_$type" . "_$id() {
-        var data = {
-            action: 'bugerator_get_attachment',
-            post: '$type',
-            id: $id,
-            security: '$ajax_nonce'
-        };
-        
-        jQuery.get(ajaxurl, data, function(response) {
-            document.getElementById('file_attach_$type" . "_$id').innerHTML = response;
+        function show_file_$type" . "_$id() {
+            var data = {
+                action: 'bugerator_get_attachment',
+                post: '$type',
+                id: $id,
+                security: '$ajax_nonce'
+            };
+            
+            jQuery.get(ajaxurl, data, function(response) {
+                document.getElementById('file_attach_$type" . "_$id').innerHTML = response;
 
-        });
-		    }";
-        } else {
+            });
+            }";
+
+        } elseif ($extension == "jpg" or
+            $extension == "jpeg" or
+            $extension == "gif" or
+            $extension == "png")  {
             $ajax_url = admin_url() . "admin-ajax.php";
             if (true == FORCE_SSL_ADMIN)
                 $ajax_url = str_replace("http:", "https:", $ajax_url);
@@ -2495,6 +2502,11 @@ class BugeratorMain {
 		    document.getElementById('file_attach_$type" . "_$id').innerHTML =
 		    '<img src=\"$ajax_url?action=bugerator_get_attachment" .
                     "&security=$ajax_nonce&post=$type&id=$id\" >'
+            }";
+        } else {
+            $ajax_url = admin_url() . "admin-ajax.php";
+            $javascript = "function show_file_$type" . "_$id() {
+                window.open('$ajax_url?action=bugerator_get_attachment&security=$ajax_nonce&post=$type&id=$id');
             }";
         }
         return $javascript;
