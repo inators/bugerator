@@ -67,7 +67,7 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 
 == Changelog ==
 
-= 1.1.8.1=
+= 1.1.8.1 =
 
 * Minor bug when installing from scratch
 

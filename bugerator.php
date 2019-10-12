@@ -179,8 +179,9 @@ function bugerator_function($atts) {
     // give us jquery
     wp_enqueue_script(array('jquery'));
 
-
-    date_default_timezone_set(get_option('timezone_string'));
+    // Commenting this out.  It is generating an error if timezone_string isn't properly set
+    // and I think we can do ok without it.
+    //date_default_timezone_set(get_option('timezone_string'));
     global $bugerator_project_id;
     // if there is a shortcode in the project then take away the option to change it.
     if ($project <> "ALL")
@@ -5947,7 +5948,8 @@ class BugeratorInstall {
          */
         add_option('bugerator_options', 'anonymous_post|false,upload_files|true,date_format|m/d/Y,' .
                 'long_date_format|m/d/Y H:i:s T,margin|0,filesize|1048576,navtabsize|,anonymous_comments|false' .
-                ',default_priority|3,default_status|0,hide_all_anonymous|false,accept_all_filetypes|false', '', 'no');
+                ',default_priority|3,default_status|0,hide_all_anonymous|false,accept_all_filetypes|false' .
+                ',email_on_assignment|false', '', 'no');
         add_option('bugerator_types', 'Bug,Feature Request,Idea', '', 'no');
 
         add_option('bugerator_project_display', '', '', 'no');

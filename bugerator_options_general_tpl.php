@@ -57,7 +57,8 @@
             </td>
             <td class="bugerator bugerator_options_gerneral form_right" >
                 <input type="checkbox" name="email_on_assignment" 
-                       <?PHP if ($options['email_on_assignment'] == "true") echo "CHECKED" ?>  /> Yes if checked.
+                       <?PHP if (isset($options['email_on_assignment']) and 
+                       $options['email_on_assignment'] == "true") echo "CHECKED" ?>  /> Yes if checked.
             </td>
         </tr>        <tr class="bugerator bugerator_options_general" >
             <td class="bugerator bugerator_options_general form_left" >
