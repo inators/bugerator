@@ -4,7 +4,7 @@
   Plugin Name: Bugerator
   Plugin URI: http://www.tickerator.org/bugerator
   Description: A bug tracking / issue tracking plugin
-  Version: 1.1.7
+  Version: 1.1.8.1
   Author: David Whipple
   Author URI: http://www.tickerator.org
   License: GPL2
@@ -5947,7 +5947,7 @@ class BugeratorInstall {
          */
         add_option('bugerator_options', 'anonymous_post|false,upload_files|true,date_format|m/d/Y,' .
                 'long_date_format|m/d/Y H:i:s T,margin|0,filesize|1048576,navtabsize|,anonymous_comments|false' .
-                ',default_priority|3,default_status|0,hide_all_anonymouse|false', '', 'no');
+                ',default_priority|3,default_status|0,hide_all_anonymous|false,accept_all_filetypes|false', '', 'no');
         add_option('bugerator_types', 'Bug,Feature Request,Idea', '', 'no');
 
         add_option('bugerator_project_display', '', '', 'no');
@@ -6254,7 +6254,7 @@ class BugeratorInstall {
                             owner BIGINT(20),
                             current_version INT,
                             version_date DATETIME,
-			    created_date DATETIME,
+			                created_date DATETIME,
                             status INT,
                             admins TEXT,
                             developers TEXT,
@@ -6262,7 +6262,7 @@ class BugeratorInstall {
                             version_created_list TEXT,
                             version_goal_list TEXT,
                             hidden TINYINT,
-			    options TEXT,
+			                options TEXT,
                             description TEXT,
                             UNIQUE KEY id (id)
                             );
@@ -6274,12 +6274,12 @@ class BugeratorInstall {
          * foreign_id = the id of the issue or project
          */
         $sql[3] = "CREATE TABLE $bugerator_subscriptions (
-			    id INT NOT NULL AUTO_INCREMENT,
-			    user BIGINT(20),
-			    type VARCHAR(20),
-			    foreign_id INT,
-			    visited TINYINT,
-			    UNIQUE KEY id (id)
+                            id INT NOT NULL AUTO_INCREMENT,
+                            user BIGINT(20),
+                            type VARCHAR(20),
+                            foreign_id INT,
+                            visited TINYINT,
+                            UNIQUE KEY id (id)
 		);
 		";
         /*
@@ -6289,11 +6289,11 @@ class BugeratorInstall {
          * current time or last half hour
          */
         $sql[4] = "CREATE TABLE $bugerator_visits_table (
-			    id INT NOT NULL AUTO_INCREMENT,
-			    user BIGINT(20),
-			    old_time DATETIME,
-			    new_time DATETIME,
-			    UNIQUE KEY id (id)
+                            id INT NOT NULL AUTO_INCREMENT,
+                            user BIGINT(20),
+                            old_time DATETIME,
+                            new_time DATETIME,
+                            UNIQUE KEY id (id)
 		);
 		";
         return $sql;

@@ -4,7 +4,7 @@ Donate link: http://www.tickerator.org
 Tags: issue tracking, bug tracking, project tracking, submit bugs, issues, bug tracker
 Requires at least: 3.4.1
 Tested up to: 5.2.3
-Stable tag: 1.1.8
+Stable tag: 1.1.8.1
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,10 @@ Please report bugs (or see the plugin in action) at https://tickerator.org/my_bu
 6. The ability to add/edit administrators without increasing their access to your blog.
 
 == Changelog ==
+
+= 1.1.8.1=
+
+* Minor bug when installing from scratch
 
 = 1.1.8 =
 
